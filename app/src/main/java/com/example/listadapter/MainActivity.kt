@@ -15,20 +15,27 @@ class MainActivity : AppCompatActivity() {
             TODO("Not yet implemented")
         }
     }
-    private val exampleAdapter = viewModel.abc?.let { Adapter(it, adapterListener) }
+
+    private val adapter = Adapter(adapterListener)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupViewModel()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.recyclerview.adapter = exampleAdapter
+        binding.recyclerview.adapter = adapter
     }
 
     private fun setupViewModel() {
-        viewModel.liveData.observe(this, { list ->
-            Log.e("list", "$list")
-            exampleAdapter?.submitList(list.toMutableList())
+        viewModel.uiState.observe(this, { state ->
+            when(state) {
+                UiState.Loading -> TODO()
+                is UiState.ShowList -> {
+                    Log.e("list", "$state.data")
+                    adapter.setAbc(state.abc)
+                    adapter.submitList(state.data?.toMutableList())
+                }
+            }
         })
     }
 

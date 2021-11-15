@@ -1,16 +1,23 @@
 package com.example.listadapter
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
+sealed class UiState {
+    data class ShowList(val abc: Abc, val data: List<XYZ>?): UiState()
+    object Loading: UiState()
+}
+
 class ActivityViewModel : ViewModel() {
 
     var abc: Abc? = null
     private var xyz: List<XYZ>? = null
-    var liveData: MutableLiveData<List<XYZ>> = MutableLiveData()
+    private var _uiState: MutableLiveData<UiState> = MutableLiveData()
+    var uiState: LiveData<UiState> = _uiState
 
     fun fetchData() {
         viewModelScope.launch {
@@ -27,8 +34,9 @@ class ActivityViewModel : ViewModel() {
             }
             firstAsync.await()
             secondAsync.await()
-            if (abc != null) {
-                liveData.postValue(xyz!!)
+
+            abc?.let {
+                _uiState.postValue(UiState.ShowList(it, xyz))
             }
         }
     }

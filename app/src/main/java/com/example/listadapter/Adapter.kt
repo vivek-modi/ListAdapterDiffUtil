@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
 class Adapter(
-    private val abc: Abc,
     private val listener: Listener<XYZ>
 ) : ListAdapter<XYZ, AdapterViewHolder>(LIST_COMPARATOR) {
 
@@ -25,7 +24,11 @@ class Adapter(
             }
         }
     }
+    private lateinit var abc: Abc
 
+    fun setAbc(abc: Abc) {
+        this.abc = abc
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdapterViewHolder {
         return AdapterViewHolder.bindView(parent, abc)
     }
